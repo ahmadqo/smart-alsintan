@@ -6,6 +6,7 @@ import NoData from "../../components/NoData";
 import ModalConfirmation from "../../components/ModalConfirmation";
 import PopupResponse from "../../components/PopupResponse";
 import FormCreateUser from "./FormCreateUser";
+import FormEditUser from "./FormEditUser";
 import { fetchDeleteUserById, fetchGetUsers } from "../../services/userService";
 
 const getRoleBadge = (role) => {
@@ -48,6 +49,7 @@ function DataTablePengaturanUser() {
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [responsePopup, setResponsePopup] = useState({
@@ -77,6 +79,11 @@ function DataTablePengaturanUser() {
   const handleDeleteClick = (data) => {
     setSelectedData(data);
     setShowDeleteModal(true);
+  };
+
+  const handleEdit = (data) => {
+    setSelectedData(data);
+    setShowEditModal(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -208,7 +215,7 @@ function DataTablePengaturanUser() {
                         <ButtonActionTable
                           isEdit
                           isRemove
-                          // onEdit={() => handleEdit(user)}
+                          onEdit={() => handleEdit(user)}
                           onRemove={() => handleDeleteClick(user)}
                         />
                       </td>
@@ -245,6 +252,13 @@ function DataTablePengaturanUser() {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onSuccess={handleSuccess}
+      />
+
+      <FormEditUser
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onSuccess={handleSuccess}
+        data={selectedData}
       />
 
       <ModalConfirmation

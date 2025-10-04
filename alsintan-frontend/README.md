@@ -5,6 +5,8 @@
 ### Project setup
 
 ```
+node version 20
+
 npm install
 ```
 

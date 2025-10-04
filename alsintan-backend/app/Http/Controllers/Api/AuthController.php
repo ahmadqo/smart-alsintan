@@ -177,7 +177,6 @@ class AuthController extends Controller
             'username' => 'sometimes|required|string|unique:users,username,' . $user->id,
             'nama' => 'sometimes|required|string',
             'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
-            'password' => 'sometimes|required|string|min:6',
             'role' => 'sometimes|required|in:admin,staff'
         ]);
         if ($request->has('username')) {
