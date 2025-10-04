@@ -14,10 +14,6 @@ export function formatDate(input: string | number): string {
   });
 }
 
-export function absoluteUrl(path: string) {
-  return `${process.env.NEXT_PUBLIC_APP_URL}${path}`;
-}
-
 export const formatDate2 = (date: string | number) => {
   if (!date) return "-";
   return new Date(date).toLocaleDateString("id-ID", {

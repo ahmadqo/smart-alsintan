@@ -4,32 +4,9 @@ import Pagination from "../../components/Pagination";
 import ButtonAdd from "../../components/ButtonAdd";
 import NoData from "../../components/NoData";
 import ModalConfirmation from "../../components/ModalConfirmation";
+import PopupResponse from "../../components/PopupResponse";
 import FormCreateUser from "./FormCreateUser";
-
-// Dummy data untuk development - ganti dengan API call
-const dummyUsers = [
-  {
-    id: 1,
-    username: "admin",
-    nama: "Administrator Sistem",
-    email: "admin@alsintan.klaten.go.id",
-    role: "admin",
-  },
-  {
-    id: 2,
-    username: "staff1",
-    nama: "Staff Bidang Alsintan",
-    email: "staff1@alsintan.klaten.go.id",
-    role: "staff",
-  },
-  {
-    id: 3,
-    username: "staff2",
-    nama: "Staff Bidang Alsintan",
-    email: "staff2@alsintan.klaten.go.id",
-    role: "staff",
-  },
-];
+import { fetchDeleteUserById, fetchGetUsers } from "../../services/userService";
 
 const getRoleBadge = (role) => {
   const roleConfig = {
@@ -73,28 +50,26 @@ function DataTablePengaturanUser() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [responsePopup, setResponsePopup] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info",
+  });
   const itemsPerPage = 10;
 
   useEffect(() => {
-    // Simulasi fetch data - ganti dengan API call yang sebenarnya
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      // TODO: Ganti dengan endpoint Laravel Anda
-      // const response = await fetch('/api/users');
-      // const data = await response.json();
-      // setDatas(data);
-
-      // Sementara menggunakan dummy data
-      setTimeout(() => {
-        setDatas(dummyUsers);
-        setLoading(false);
-      }, 500);
+      const response = await fetchGetUsers();
+      setDatas(response?.data || []);
     } catch (error) {
       console.error("Error:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -107,19 +82,27 @@ function DataTablePengaturanUser() {
   const handleConfirmDelete = async () => {
     setDeleteLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // await fetch(`/api/pengajuan/${selectedData.id}`, {
-      //   method: 'DELETE'
-      // });
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await fetchDeleteUserById(selectedData.id);
 
       // Update local state
       setDatas((prev) => prev.filter((item) => item.id !== selectedData.id));
       setShowDeleteModal(false);
       setSelectedData(null);
+      setResponsePopup({
+        isOpen: true,
+        title: "Berhasil",
+        message: "User berhasil dihapus.",
+        type: "success",
+      });
     } catch (error) {
       console.error("Error:", error);
+      setShowDeleteModal(false);
+      setResponsePopup({
+        isOpen: true,
+        title: "Gagal",
+        message: "Gagal menghapus user. Silakan coba lagi.",
+        type: "danger",
+      });
     } finally {
       setDeleteLoading(false);
     }
@@ -137,7 +120,12 @@ function DataTablePengaturanUser() {
   };
 
   const handleSuccess = (message) => {
-    alert(message);
+    setResponsePopup({
+      isOpen: true,
+      title: "Berhasil",
+      message: message,
+      type: "success",
+    });
     fetchUsers();
   };
 
@@ -267,6 +255,16 @@ function DataTablePengaturanUser() {
         message={`Apakah Anda yakin ingin menghapus user ${selectedData?.nama}?`}
         type="danger"
         loading={deleteLoading}
+      />
+
+      <PopupResponse
+        isOpen={responsePopup.isOpen}
+        onClose={() => {
+          setResponsePopup((prev) => ({ ...prev, isOpen: false }));
+        }}
+        title={responsePopup.title}
+        message={responsePopup.message}
+        type={responsePopup.type}
       />
     </>
   );

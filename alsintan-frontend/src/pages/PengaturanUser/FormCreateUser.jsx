@@ -2,6 +2,7 @@ import { useState } from "react";
 import ModalConfirmation from "../../components/ModalConfirmation";
 import TextInput from "../../components/TextInput";
 import SelectInput from "../../components/SelectInput";
+import { fetchCreateUser } from "../../services/userService";
 
 const roleList = [
   { id: "admin", nama: "Administrator Sistem" },
@@ -10,8 +11,8 @@ const roleList = [
 
 const FormCreateUser = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
-    userName: "",
-    fullName: "",
+    username: "",
+    nama: "",
     role: "",
     email: "",
     password: "",
@@ -36,8 +37,8 @@ const FormCreateUser = ({ isOpen, onClose, onSuccess }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.userName) newErrors.userName = "Username wajib diisi";
-    if (!formData.fullName) newErrors.fullName = "Nama Lengkap wajib diisi";
+    if (!formData.username) newErrors.username = "Username wajib diisi";
+    if (!formData.nama) newErrors.nama = "Nama Lengkap wajib diisi";
     if (!formData.role) newErrors.role = "Role wajib diisi";
     if (!formData.email) newErrors.email = "Email wajib diisi";
     if (!formData.password) newErrors.password = "Password wajib diisi";
@@ -56,14 +57,7 @@ const FormCreateUser = ({ isOpen, onClose, onSuccess }) => {
   const handleConfirmSubmit = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // await fetch('/api/pengajuan', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await fetchCreateUser(formData); // Panggil API untuk menyimpan data
 
       setShowConfirmModal(false);
       onSuccess("User berhasil ditambahkan");
@@ -79,8 +73,8 @@ const FormCreateUser = ({ isOpen, onClose, onSuccess }) => {
 
   const resetForm = () => {
     setFormData({
-      userName: "",
-      fullName: "",
+      username: "",
+      nama: "",
       role: "",
       email: "",
       password: "",
@@ -141,19 +135,19 @@ const FormCreateUser = ({ isOpen, onClose, onSuccess }) => {
                 {/* Username */}
                 <TextInput
                   label="Username"
-                  name="userName"
-                  value={formData.userName}
+                  name="username"
+                  value={formData.username}
                   onChange={handleChange}
-                  error={errors.userName}
+                  error={errors.username}
                   required
                 />
                 {/* Nama Lengkap */}
                 <TextInput
                   label="Nama Lengkap"
-                  name="fullName"
-                  value={formData.fullName}
+                  name="nama"
+                  value={formData.nama}
                   onChange={handleChange}
-                  error={errors.fullName}
+                  error={errors.nama}
                   required
                 />
                 {/* Role */}

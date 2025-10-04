@@ -4,13 +4,14 @@ import Transition from "../utils/Transition";
 import { useAuth } from "../contexts/AuthContext";
 
 import UserAvatar from "../images/user-avatar-32.png";
+import { logoutUser } from "../services/userService";
 
 function DropdownProfile({ align }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef(null);
   const dropdown = useRef(null);
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   // close on click outside
   useEffect(() => {
@@ -38,6 +39,12 @@ function DropdownProfile({ align }) {
     return () => document.removeEventListener("keydown", keyHandler);
   });
 
+  const onLogout = async () => {
+    setDropdownOpen(!dropdownOpen);
+    await logoutUser();
+    logout();
+  };
+
   return (
     <div className="relative inline-flex">
       <button
@@ -56,7 +63,7 @@ function DropdownProfile({ align }) {
         />
         <div className="flex items-center truncate">
           <span className="truncate ml-2 text-sm font-medium text-gray-600 dark:text-gray-100 group-hover:text-gray-800 dark:group-hover:text-white">
-            Admin
+            {user?.name}
           </span>
           <svg
             className="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500"
@@ -86,10 +93,10 @@ function DropdownProfile({ align }) {
         >
           <div className="pt-0.5 pb-2 px-3 mb-1 border-b border-gray-200 dark:border-gray-700/60">
             <div className="font-medium text-gray-800 dark:text-gray-100">
-              Admin
+              {user?.name}
             </div>
             <div className="text-xs text-gray-500 dark:text-gray-400 italic">
-              Administrator
+              {user?.role}
             </div>
           </div>
           <ul>
@@ -105,10 +112,7 @@ function DropdownProfile({ align }) {
             <li>
               <Link
                 className="font-medium text-sm text-violet-500 hover:text-violet-600 dark:hover:text-violet-400 flex items-center py-1 px-3"
-                onClick={() => {
-                  setDropdownOpen(!dropdownOpen);
-                  logout();
-                }}
+                onClick={onLogout}
               >
                 Sign Out
               </Link>

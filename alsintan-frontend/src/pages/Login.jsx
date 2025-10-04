@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import logo from "../images/logo.png";
+import { fetchLogin } from "../services/userService";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,21 +18,41 @@ const Login = () => {
     setLoading(true);
 
     try {
-      if (email === "admin@example.com" && password === "password") {
+      const payload = { username, password };
+      const data = await fetchLogin(payload);
+
+      if (data.success) {
         const userData = {
-          id: 1,
-          email: email,
-          name: "Admin User",
-          role: "admin",
+          id: data.data.user.id,
+          email: data.data.user.email,
+          name: data.data.user.nama,
+          role: data.data.user.role,
+          token: data.data.token,
         };
 
         login(userData);
         navigate("/", { replace: true });
       } else {
-        setError("Email atau password salah");
+        setError(data.message || "Username atau password salah");
       }
+
+      // Demo login logic (to be replaced with real API call)
+      // if (email === "admin@example.com" && password === "password") {
+      //   const userData = {
+      //     id: 1,
+      //     email: email,
+      //     name: "Admin User",
+      //     role: "admin",
+      //   };
+
+      //   login(userData);
+      //   navigate("/", { replace: true });
+      // } else {
+      //   setError("Email atau password salah");
+      // }
     } catch (err) {
-      setError("Terjadi kesalahan. Silakan coba lagi.");
+      console.warn(err);
+      setError(err.message || "Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -73,7 +94,7 @@ const Login = () => {
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email Input */}
+              {/* Username Input */}
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <svg
@@ -91,10 +112,10 @@ const Login = () => {
                   </svg>
                 </div>
                 <input
-                  type="email"
+                  type="text"
                   placeholder="Username"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                   className="w-full pl-12 pr-4 py-4 bg-gray-50 border-0 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
                 />

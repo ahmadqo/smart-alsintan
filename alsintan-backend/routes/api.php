@@ -1,7 +1,9 @@
 <?php
 
 // routes/api.php - Complete version
+use App\Http\Controllers\Api\DistribusiController;
 use App\Http\Controllers\Api\PengajuanController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SmartRecommendationController;
 use App\Http\Controllers\Api\HelperController;
 use App\Http\Controllers\Api\AuthController;
@@ -14,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Public routes (no authentication required)
-Route::prefix('api/v1')->group(function () {
+Route::prefix('v1')->group(function () {
     // Authentication
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -22,7 +24,7 @@ Route::prefix('api/v1')->group(function () {
 });
 
 // Protected routes (authentication required)
-Route::prefix('api/v1')->middleware(['auth:sanctum'])->group(function () {
+Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
 
     // 1. PENGAJUAN ALSINTAN ENDPOINTS
     Route::prefix('pengajuan')->group(function () {
@@ -63,5 +65,14 @@ Route::prefix('api/v1')->middleware(['auth:sanctum'])->group(function () {
         Route::get('/', [DistribusiController::class, 'index']);              // GET /api/v1/distribusi
         Route::post('/', [DistribusiController::class, 'store']);             // POST /api/v1/distribusi
         Route::put('/{id}/status', [DistribusiController::class, 'updateStatus']); // PUT /api/v1/distribusi/{id}/status
+    });
+
+    // 6. USER MANAGEMENT ENDPOINTS (Admin only)
+    Route::prefix('users')->middleware('admin')->group(function () {
+        Route::get('/', [AuthController::class, 'getAllUsers']);              // GET /api/v1/users
+        Route::get('/{id}', [AuthController::class, 'getDetailUserById']); // GET /api/v1/users/{id}   
+        Route::post('/', [AuthController::class, 'createUser']);              // POST /api/v1/users
+        Route::put('/{id}', [AuthController::class, 'updateUser']);         // PUT /api/v1/users/{id}
+        Route::delete('/{id}', [AuthController::class, 'deleteUserById']); // DELETE /api/v1/users/{id}  
     });
 });
